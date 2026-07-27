@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="{{ site.Language.Locale }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f3ecdf">
+  <title>{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }} · {{ site.Title }}{{ end }}</title>
+  <meta name="description" content="{{ .Description | default .Summary | default site.Params.description }}">
+  <meta name="author" content="{{ site.Params.author }}">
+  <link rel="icon" href="{{ "favicon.png" | relURL }}" type="image/png">
+  <link rel="stylesheet" href="{{ "css/main.css" | relURL }}">
+  <link rel="alternate" type="application/rss+xml" title="{{ site.Title }}" href="{{ "index.xml" | absURL }}">
+  <meta property="og:title" content="{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }}{{ end }}">
+  <meta property="og:description" content="{{ .Description | default site.Params.description }}">
+  <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
+  <meta property="og:image" content="{{ "og.png" | absURL }}">
+  <meta property="og:url" content="{{ .Permalink }}">
+</head>
+<body>
+  <header class="site-header shell">
+    <a class="brand" href="{{ "/" | relURL }}" aria-label="{{ site.Title }} 首页">
+      <span class="brand-mark" aria-hidden="true">C</span>
+      <span>
+        <strong>{{ site.Title }}</strong>
+        <small>FIELD NOTES</small>
+      </span>
+    </a>
+    <nav aria-label="主导航">
+      {{ range site.Menus.main }}
+        <a href="{{ .URL | relURL }}">{{ .Name }}</a>
+      {{ end }}
+      <a href="{{ "index.xml" | relURL }}">RSS</a>
+    </nav>
+  </header>
+
+  {{ block "main" . }}{{ end }}
+
+  <footer class="site-footer shell">
+    <div class="footer-message">
+      <span class="footer-sun" aria-hidden="true"></span>
+      <p>愿我们都能保有好奇，<br>也保有不被催促的耐心。</p>
+    </div>
+    <div class="footer-meta">
+      <p>© {{ now.Year }} {{ site.Params.author }}</p>
+      <p>BUILT WITH HUGO · PUBLISHED ON CLOUDFLARE</p>
+    </div>
+  </footer>
+</body>
+</html>

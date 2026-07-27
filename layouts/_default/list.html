@@ -1,0 +1,23 @@
+{{ define "main" }}
+<main class="articles shell">
+  <div class="section-heading">
+    <div>
+      <p class="section-label">{{ .Section | upper }}</p>
+      <h1>{{ .Title }}</h1>
+    </div>
+  </div>
+  <div class="post-list">
+    {{ range $index, $post := .Pages.ByDate.Reverse }}
+    <article class="post-row">
+      <div class="post-index">{{ printf "%02d" (add $index 1) }}</div>
+      <div class="post-main">
+        <div class="post-meta"><time>{{ .Date.Format "2006.01.02" }}</time></div>
+        <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+        <p>{{ .Description | default .Summary }}</p>
+      </div>
+      <a class="post-arrow" href="{{ .RelPermalink }}" aria-label="阅读《{{ .Title }}》">↗</a>
+    </article>
+    {{ end }}
+  </div>
+</main>
+{{ end }}

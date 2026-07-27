@@ -1,0 +1,17 @@
+{{ define "main" }}
+<main>
+  <article class="article shell">
+    <a class="back-link" href="{{ "/#articles" | relURL }}">← 返回文章列表</a>
+    <header class="article-header">
+      <div class="article-kicker">
+        {{ with index .Params.tags 0 }}<span>{{ . }}</span>{{ end }}
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006.01.02" }}</time>
+        {{ with .ReadingTime }}<span>{{ . }} 分钟</span>{{ end }}
+      </div>
+      <h1>{{ .Title }}</h1>
+      {{ with .Description }}<p>{{ . }}</p>{{ end }}
+    </header>
+    <div class="article-body">{{ .Content }}</div>
+  </article>
+</main>
+{{ end }}

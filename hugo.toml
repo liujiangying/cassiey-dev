@@ -1,0 +1,30 @@
+baseURL = "https://cassiey-dev.pages.dev/"
+locale = "zh-CN"
+title = "微光手记"
+enableRobotsTXT = true
+summaryLength = 36
+
+[params]
+  author = "cassiey"
+  description = "技术、阅读与生活观察。"
+
+[permalinks]
+  posts = "/posts/:slug/"
+
+[outputs]
+  home = ["HTML", "RSS"]
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+
+[menus]
+  [[menus.main]]
+    name = "文章"
+    url = "/#articles"
+    weight = 10
+  [[menus.main]]
+    name = "关于"
+    url = "/about/"
+    weight = 20
