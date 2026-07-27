@@ -8,7 +8,7 @@
   <meta name="description" content="{{ .Description | default .Summary | default site.Params.description }}">
   <meta name="author" content="{{ site.Params.author }}">
   <link rel="icon" href="{{ "favicon.png" | relURL }}" type="image/png">
-  <link rel="stylesheet" href="{{ "css/main.css" | relURL }}">
+  <link rel="stylesheet" href="{{ "css/main.css" | relURL }}?v={{ now.Unix }}">
   <link rel="alternate" type="application/rss+xml" title="{{ site.Title }}" href="{{ "index.xml" | absURL }}">
   <meta property="og:title" content="{{ if .IsHome }}{{ site.Title }}{{ else }}{{ .Title }}{{ end }}">
   <meta property="og:description" content="{{ .Description | default site.Params.description }}">
