@@ -1,6 +1,6 @@
 baseURL = "https://cassiey-dev.pages.dev/"
 locale = "zh-CN"
-title = "微光手记"
+title = "cassiey blog"
 enableRobotsTXT = true
 summaryLength = 36
 
