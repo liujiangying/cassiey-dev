@@ -252,7 +252,7 @@ Claude Code 中，很多系统能力也通过工具形态交给模型：
 
 工具定义本身会进入模型上下文。假设 50 个工具平均各占 500 token，仅工具说明就要消耗约 25,000 token；更麻烦的是，模型每次选工具时都要在大量相近名称之间判断。
 
-一个只想搜索 TypeScript 文件的任务，没有必要同时理解如何操作 Jira、如何读取 Figma、怎样查询数据库和怎样编辑 Notebook。
+一个只想搜索 TypeScript 文件的任务，没有必要同时理解如何操作 TAPD、如何读取 Figma、怎样查询数据库和怎样编辑 Notebook。
 
 ### 把工具分成“桌面上”和“仓库里”
 
@@ -474,7 +474,7 @@ Fork：方法在独立上下文中执行，主线只接收结果
 
 团队过去踩过的坑，可以变成下一次任务默认执行的步骤。这就是 Skills 流行的根本原因：它让经验从聊天记录里脱离出来，变成可维护的文件。
 
-但 Skills 只能教 Agent 怎样使用已有能力。如果我们需要访问 Jira、Figma 或公司内部数据库，Claude Code 仍缺少真正的连接。
+但 Skills 只能教 Agent 怎样使用已有能力。如果我们需要访问 TAPD、Figma 或公司内部数据库，Claude Code 仍缺少真正的连接。
 
 ## 6. MCP：外部工具怎样进入同一个 Agent 循环
 
@@ -497,10 +497,12 @@ Claude Code 连接 Server 后，先发现它提供的清单，再把外部工具
 ```text
 mcp__github__search_code
 mcp__github__get_pull_request
-mcp__jira__search_issues
+mcp__tapd__search_workitems
 ```
 
-对于 ReAct 循环来说，内置 Read 和远程 Jira 查询没有本质差异：模型选择工具，Harness 执行，结果作为 Observation 返回。
+这里的 `mcp__tapd__search_workitems` 是为了说明命名方式而写的示意名称。实际接入时，工具名取决于所使用的 TAPD MCP Server；如果没有现成 Server，也可以基于 TAPD API 封装对应工具。
+
+对于 ReAct 循环来说，内置 Read 和远程 TAPD 查询没有本质差异：模型选择工具，Harness 执行，结果作为 Observation 返回。
 
 ### stdio 与 HTTP 解决不同场景
 
@@ -510,7 +512,7 @@ mcp__jira__search_issues
 
 ### MCP 工具也要遵守权限和渐进加载
 
-外部工具通常比本地读取更敏感。查询生产数据库和创建 Jira 工单不能默认拥有同样权限。
+外部工具通常比本地读取更敏感。查询生产数据库和创建 TAPD 需求或缺陷，不能默认拥有同样权限。
 
 因此，MCP 工具仍要进入 Claude Code 的权限决策：哪些可以自动执行，哪些每次询问，哪些永远拒绝。
 
