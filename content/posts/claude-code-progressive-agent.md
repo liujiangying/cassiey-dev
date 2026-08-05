@@ -3,7 +3,7 @@ title = "Claude Code 原理分析（1）：用渐进的方式理解一个 Code A
 slug = "claude-code-progressive-agent"
 date = 2026-08-05
 description = "从最小的 Agent 循环开始，一层层加入工具、文件系统、Skills、MCP、Hooks、子 Agent、Plan Mode 与记忆，理解 Claude Code 为什么能够真正完成编码任务。"
-tags = ["AI", "Claude Code", "Agent"]
+tags = ["Claude Code", "Agent", "AI"]
 draft = false
 +++
 
