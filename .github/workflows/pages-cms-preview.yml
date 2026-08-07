@@ -76,6 +76,7 @@ jobs:
           PY
 
       - name: 更新预览分支
+        id: deploy
         env:
           ARTICLE_PATH: ${{ steps.article.outputs.path }}
         run: |
@@ -87,17 +88,19 @@ jobs:
             git commit -m "生成文章预览"
           fi
           git push --force origin HEAD:preview
+          echo "version=$(git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: 显示预览地址
         env:
           ARTICLE_SLUG: ${{ steps.article.outputs.slug }}
+          PREVIEW_VERSION: ${{ steps.deploy.outputs.version }}
         run: |
           {
             echo "## 文章预览"
             echo
             echo "Cloudflare 构建完成后，请打开："
             echo
-            echo "https://preview.cassiey-dev.pages.dev/posts/$ARTICLE_SLUG/"
+            echo "https://preview.cassiey-dev.pages.dev/posts/$ARTICLE_SLUG/?v=$PREVIEW_VERSION"
             echo
             echo "首次生成通常需要等待一到两分钟。"
           } >> "$GITHUB_STEP_SUMMARY"
