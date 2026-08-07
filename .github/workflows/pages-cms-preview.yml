@@ -34,6 +34,7 @@ jobs:
           import json
           import os
           import re
+          import tomllib
           from pathlib import Path
 
           payload = json.loads(os.environ["PAGES_CMS_PAYLOAD"])
@@ -52,8 +53,9 @@ jobs:
               raise SystemExit("文章不是有效的 TOML Front Matter 格式")
 
           frontmatter = parts[1]
-          slug_match = re.search(r'^slug\s*=\s*"([a-z0-9]+(?:-[a-z0-9]+)*)"\s*$', frontmatter, re.MULTILINE)
-          if not slug_match:
+          metadata = tomllib.loads(frontmatter)
+          slug = metadata.get("slug", "")
+          if not isinstance(slug, str) or not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", slug):
               raise SystemExit("文章缺少有效的 slug")
 
           draft_pattern = r"^draft\s*=\s*(?:true|false)\s*$"
@@ -66,7 +68,7 @@ jobs:
 
           with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as output:
               output.write(f"path={article_path}\n")
-              output.write(f"slug={slug_match.group(1)}\n")
+              output.write(f"slug={slug}\n")
           PY
 
       - name: 更新预览分支
