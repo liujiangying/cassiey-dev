@@ -1,0 +1,97 @@
+name: 生成文章预览
+
+on:
+  workflow_dispatch:
+    inputs:
+      payload:
+        description: Pages CMS action payload
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: article-preview
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 读取博客源码
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: 准备预览文章
+        id: article
+        env:
+          PAGES_CMS_PAYLOAD: ${{ inputs.payload }}
+        run: |
+          python3 <<'PY'
+          import json
+          import os
+          import re
+          from pathlib import Path
+
+          payload = json.loads(os.environ["PAGES_CMS_PAYLOAD"])
+          article_path = payload.get("context", {}).get("path", "")
+
+          if not re.fullmatch(r"content/posts/[A-Za-z0-9._-]+\.md", article_path):
+              raise SystemExit(f"不允许的文章路径：{article_path}")
+
+          path = Path(article_path)
+          if not path.is_file():
+              raise SystemExit(f"找不到文章：{article_path}")
+
+          source = path.read_text(encoding="utf-8")
+          parts = source.split("+++", 2)
+          if len(parts) != 3:
+              raise SystemExit("文章不是有效的 TOML Front Matter 格式")
+
+          frontmatter = parts[1]
+          slug_match = re.search(r'^slug\s*=\s*"([a-z0-9]+(?:-[a-z0-9]+)*)"\s*$', frontmatter, re.MULTILINE)
+          if not slug_match:
+              raise SystemExit("文章缺少有效的 slug")
+
+          draft_pattern = r"^draft\s*=\s*(?:true|false)\s*$"
+          if re.search(draft_pattern, frontmatter, re.MULTILINE):
+              frontmatter = re.sub(draft_pattern, "draft = false", frontmatter, flags=re.MULTILINE)
+          else:
+              frontmatter = frontmatter.rstrip() + "\ndraft = false\n"
+
+          path.write_text("+++" + frontmatter + "+++" + parts[2], encoding="utf-8")
+
+          with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as output:
+              output.write(f"path={article_path}\n")
+              output.write(f"slug={slug_match.group(1)}\n")
+          PY
+
+      - name: 更新预览分支
+        env:
+          ARTICLE_PATH: ${{ steps.article.outputs.path }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B preview
+          git add "$ARTICLE_PATH"
+          if ! git diff --cached --quiet; then
+            git commit -m "生成文章预览"
+          fi
+          git push --force origin HEAD:preview
+
+      - name: 显示预览地址
+        env:
+          ARTICLE_SLUG: ${{ steps.article.outputs.slug }}
+        run: |
+          {
+            echo "## 文章预览"
+            echo
+            echo "Cloudflare 构建完成后，请打开："
+            echo
+            echo "https://preview.cassiey-dev.pages.dev/posts/$ARTICLE_SLUG/"
+            echo
+            echo "首次生成通常需要等待一到两分钟。"
+          } >> "$GITHUB_STEP_SUMMARY"

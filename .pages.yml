@@ -27,6 +27,16 @@ content:
       default:
         sort: date
         order: desc
+    actions:
+      - name: preview-post
+        label: 生成整站预览
+        scope: entry
+        workflow: pages-cms-preview.yml
+        ref: main
+        confirm:
+          title: 生成这篇文章的预览？
+          message: 请先保存文章并开启“保存为草稿”。预览通常需要等待一到两分钟。
+          button: 开始生成
     fields:
       - name: title
         label: 标题
