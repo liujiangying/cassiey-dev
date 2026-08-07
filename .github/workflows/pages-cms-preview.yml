@@ -64,7 +64,11 @@ jobs:
           else:
               frontmatter = frontmatter.rstrip() + "\ndraft = false\n"
 
-          path.write_text("+++" + frontmatter + "+++" + parts[2], encoding="utf-8")
+          body = parts[2].lstrip("\n")
+          path.write_text(
+              "+++\n" + frontmatter.strip() + "\n+++\n\n" + body,
+              encoding="utf-8",
+          )
 
           with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as output:
               output.write(f"path={article_path}\n")
