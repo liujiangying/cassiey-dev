@@ -1,0 +1,88 @@
+media:
+  - name: article_images
+    label: 文章图片
+    input: static/images
+    output: /images
+
+content:
+  - name: posts
+    label: 文章
+    type: collection
+    path: content/posts
+    format: toml-frontmatter
+    delimiters: "+++"
+    filename:
+      template: "{fields.slug}.md"
+      field: false
+    subfolders: false
+    operations:
+      create: true
+      rename: true
+      delete: true
+    view:
+      fields: [title, date, draft, tags]
+      primary: title
+      sort: [date, title]
+      search: [title, description, tags, body]
+      default:
+        sort: date
+        order: desc
+    fields:
+      - name: title
+        label: 标题
+        type: string
+        required: true
+        description: 显示在文章页和文章列表中的标题。
+      - name: slug
+        label: 文章地址
+        type: string
+        required: true
+        pattern:
+          regex: "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+          message: 只能使用小写英文字母、数字和连字符，例如 my-first-post。
+        description: 创建后尽量不要修改；它同时决定文章文件名和访问地址。
+      - name: date
+        label: 发布日期
+        type: date
+        required: true
+        options:
+          time: false
+          format: yyyy-MM-dd
+      - name: description
+        label: 摘要
+        type: text
+        required: true
+        description: 显示在首页文章标题下方，建议控制在一到两句话。
+        options:
+          minlength: 10
+          maxlength: 220
+      - name: tags
+        label: 标签
+        type: string
+        list: true
+        description: 使用清晰的主题词，例如 Claude Code、Agent、写作。
+      - name: draft
+        label: 保存为草稿
+        type: boolean
+        default: false
+        description: 开启后文章会保存到 GitHub，但不会出现在正式网站中。
+      - name: body
+        label: 正文
+        type: rich-text
+        required: true
+        options:
+          format: markdown
+          switcher: true
+          media: article_images
+          rename: safe
+
+settings:
+  content:
+    merge: true
+  commit:
+    identity: user
+    templates:
+      create: "发布文章：{filename}"
+      update: "更新文章：{filename}"
+      delete: "删除文章：{filename}"
+      rename: "重命名文章：{oldFilename} -> {newFilename}"
